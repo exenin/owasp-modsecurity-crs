@@ -10,6 +10,14 @@
 version: "3"
 
 services:
+  blacklist:
+    image: blacklisttest:latest
+    build: tool/wafblacklistcheck/
+    ports:
+      - "9999:8000"
+    environment:
+      - BLACKLIST="169.254.169.254 104.27.149.197"
+
 
   crs:
           #image: owasp/modsecurity-crs
@@ -18,9 +26,9 @@ services:
       context: .
       dockerfile: Dockerfile-3.0-nginx
     ports:
-      - "80:80"
+      - "8110:80"
       # only available if SETTLS was enabled:
-      - "443:443"
+      - "8143:443"
 
     environment:
       - SERVERNAME=localhost
@@ -33,6 +41,7 @@ services:
       # Inbound and Outbound Anomaly Score Threshold
       - ANOMALYIN=5
       - ANOMALYOUT=4
+      - PROXY=1
       # Executing Paranoia Level
       # - EXECUTING_PARANOIA=2
 
@@ -76,6 +85,9 @@ services:
     volumes:
       - ./REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
       - ./RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
+      - ./custom/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./custom/super_rules.conf:/etc/modsecurity.d/super_rules.conf
+      - ./custom/:/custom
 
     #######################################################
     # Add TLS server certificate and key

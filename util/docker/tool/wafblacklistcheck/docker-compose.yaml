@@ -1,0 +1,12 @@
+version: "3"
+services:
+  blacklist:
+    image: blacklisttest
+    build: .
+    ports:
+      - "9999:8000"
+    environment:
+      - SERVERNAME=localhost
+      - BLACKLIST="169.254.169.254 104.27.149.197"
+
+
